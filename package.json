@@ -2,6 +2,11 @@
   "name": "msp2-proxy",
   "version": "1.0.0",
   "main": "server.js",
-  "scripts": { "start": "node server.js" },
-  "dependencies": { "express": "^4.21.1", "axios": "^1.7.7" }
+  "scripts": { 
+    "start": "node server.js"
+  },
+  "dependencies": { 
+    "express": "^4.21.1", 
+    "axios": "^1.7.7"
+  }
 }
