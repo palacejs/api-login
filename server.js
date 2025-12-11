@@ -15,7 +15,7 @@ app.use(express.json());
 let users = []; // { profileId, accessToken, culture }
 
 // Gizli API key (kendin değiştir, güçlü yap!)
-const API_KEY = 'senin_guvenli_key_buraya_123456789'; // DEĞİŞTİR AQ!
+const API_KEY = 'obfx2025gizlianahtar8xK9pL2mZ7qW4vT5rY1uE3iO6nB0hJ9'; // DEĞİŞTİR AQ!
 
 // Middleware: Sadece /userlist için key kontrol
 const requireApiKey = (req, res, next) => {
