@@ -6,13 +6,6 @@ app.use(express.json());
 // Kullanıcı listesi
 let users = []; // { profileId, accessToken, culture }
 
-// ✔ Şifreyi sen elle değiştireceksin
-// Orijinal şifre (Base64'e çevrilmiş)
-const PASSWORD_BASE64 = "OHhLOWJMMm1aN3FXNHZUNXJZMXVFM2lPNm5CMGhKOWFTMmRGNWdIODhqSzNtTjZiVjFjWA==";
-
-// Base64 → normal şifre
-const DASHBOARD_PASSWORD = Buffer.from(PASSWORD_BASE64, "base64").toString("utf8");
-
 // --- POST /adduser ---
 app.post('/adduser', (req, res) => {
   const { profileId, accessToken, culture = '' } = req.body;
@@ -34,33 +27,8 @@ app.post('/adduser', (req, res) => {
   res.json({ success: true, total: users.length });
 });
 
-// --- GET /userlist ---
+// --- GET /userlist (ŞİFRESİZ, DİREKT JSON) ---
 app.get('/userlist', (req, res) => {
-  const password = req.query.p;
-
-  // Şifre yok → Form göster
-  if (!password) {
-    return res.send(`
-      <html>
-        <body style="font-family:Arial; padding:20px;">
-          <h2>Yetkili Paneli</h2>
-          <form method="GET">
-            <label>Şifre:</label><br>
-            <input name="p" type="password" style="padding:8px; width:250px;">
-            <br><br>
-            <button type="submit" style="padding:8px 15px;">Giriş</button>
-          </form>
-        </body>
-      </html>
-    `);
-  }
-
-  // Şifre yanlış
-  if (password !== DASHBOARD_PASSWORD) {
-    return res.status(401).send("❌ Şifre yanlış");
-  }
-
-  // Şifre doğru → JSON döndür
   return res.json({
     total: users.length,
     accounts: users
