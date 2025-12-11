@@ -14,17 +14,7 @@ app.use(express.json());
 
 let users = []; // { profileId, accessToken, culture }
 
-// Gizli API key (kendin değiştir, güçlü yap!)
-const API_KEY = 'obfx2025gizlianahtar8xK9pL2mZ7qW4vT5rY1uE3iO6nB0hJ9'; // DEĞİŞTİR AQ!
 
-// Middleware: Sadece /userlist için key kontrol
-const requireApiKey = (req, res, next) => {
-  const key = req.header('x-api-key');
-  if (!key || key !== API_KEY) {
-    return res.status(401).json({ success: false, message: 'Geçersiz API key' });
-  }
-  next();
-};
 
 // POST /adduser → Hesap ekle/güncelle
 app.post('/adduser', (req, res) => {
