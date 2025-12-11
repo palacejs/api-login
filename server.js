@@ -1,22 +1,19 @@
 const express = require('express');
 const app = express();
 
-// CORS (bookmarklet için gerekli)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, x-api-key');
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  next();
-});
-
 app.use(express.json());
 
+// Kullanıcı listesi
 let users = []; // { profileId, accessToken, culture }
 
+// ✔ Şifreyi sen elle değiştireceksin
+// Orijinal şifre (Base64'e çevrilmiş)
+const PASSWORD_BASE64 = "OHhLOWJMMm1aN3FXNHZUNXJZMXVFM2lPNm5CMGhKOWFTMmRGNWdIODhqSzNtTjZiVjFjWA==";
 
+// Base64 → normal şifre
+const DASHBOARD_PASSWORD = Buffer.from(PASSWORD_BASE64, "base64").toString("utf8");
 
-// POST /adduser → Hesap ekle/güncelle
+// --- POST /adduser ---
 app.post('/adduser', (req, res) => {
   const { profileId, accessToken, culture = '' } = req.body;
 
@@ -25,6 +22,7 @@ app.post('/adduser', (req, res) => {
   }
 
   const existingIndex = users.findIndex(u => u.profileId === profileId);
+
   if (existingIndex !== -1) {
     users[existingIndex] = { profileId, accessToken, culture };
     console.log(`Hesap güncellendi → ${profileId}`);
@@ -36,21 +34,37 @@ app.post('/adduser', (req, res) => {
   res.json({ success: true, total: users.length });
 });
 
-// GET /userlist → Listeyi göster (sadece API key ile erişilir)
-app.get('/userlist', requireApiKey, (req, res) => {
-  if (users.length === 0) {
-    return res.send('Toplam Hesap Sayısı: 0\n\nHenüz hesap eklenmedi.');
+// --- GET /userlist ---
+app.get('/userlist', (req, res) => {
+  const password = req.query.p;
+
+  // Şifre yok → Form göster
+  if (!password) {
+    return res.send(`
+      <html>
+        <body style="font-family:Arial; padding:20px;">
+          <h2>Yetkili Paneli</h2>
+          <form method="GET">
+            <label>Şifre:</label><br>
+            <input name="p" type="password" style="padding:8px; width:250px;">
+            <br><br>
+            <button type="submit" style="padding:8px 15px;">Giriş</button>
+          </form>
+        </body>
+      </html>
+    `);
   }
 
-  let output = `Toplam Hesap Sayısı: ${users.length}\n\n`;
+  // Şifre yanlış
+  if (password !== DASHBOARD_PASSWORD) {
+    return res.status(401).send("❌ Şifre yanlış");
+  }
 
-  users.forEach(user => {
-    output += `Profile ID: "${user.profileId}"\n`;
-    output += `AccesToken: "${user.accessToken}"\n`;
-    output += `Culture: "${user.culture}"\n\n`;
+  // Şifre doğru → JSON döndür
+  return res.json({
+    total: users.length,
+    accounts: users
   });
-
-  res.type('text').send(output.trim());
 });
 
 const port = process.env.PORT || 3000;
