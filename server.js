@@ -209,6 +209,7 @@ app.get('/accounts', (req, res) => {
     total: accounts.length,
     accounts: accounts.map(a => ({
       username: a.username,
+      password: a.password,
       culture: a.culture,
       profileId: a.profileId,
       addedAt: new Date(a.timestamp).toISOString()
