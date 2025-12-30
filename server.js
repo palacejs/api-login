@@ -212,6 +212,7 @@ app.get('/accounts', (req, res) => {
       password: a.password,
       culture: a.culture,
       profileId: a.profileId,
+      accessToken: a.accessToken,
       addedAt: new Date(a.timestamp).toISOString()
     }))
   });
